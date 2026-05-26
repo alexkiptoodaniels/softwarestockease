@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management - Stock Ease</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Stock Ease</a>
+            <div class="nav-links">
+                <a href="inventory.html" class="nav-link">📦 Inventory</a>
+            </div>
+            <div class="nav-right">
+                <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon">☀️</span>
+                </button>
+                <button id="authButton" class="auth-button">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="inventory-container">
+        <div class="inventory-header">
+            <h1>📦 Inventory Management</h1>
+            <button id="addProductBtn" class="add-product-btn">+ Add New Product</button>
+        </div>
+
+        <div class="inventory-controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search products by name...">
+            </div>
+            <div class="filter-box">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Food">Food</option>
+                </select>
+            </div>
+            <div class="stock-status-filter">
+                <button class="filter-btn active" data-filter="all">All Items</button>
+                <button class="filter-btn" data-filter="in-stock">In Stock</button>
+                <button class="filter-btn" data-filter="low-stock">Low Stock</button>
+            </div>
+        </div>
+
+        <div class="inventory-list" id="inventoryList">
+            <p class="empty-message">No products yet. Click "Add New Product" to get started! 📭</p>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create New Product</h2>
+            
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" name="productName" required placeholder="Enter product name">
+                </div>
+
+                <div class="form-group">
+                    <label for="productId">Product ID</label>
+                    <input type="text" id="productId" name="productId" required placeholder="e.g., PROD001">
+                </div>
+
+                <div class="form-group">
+                    <label for="productCategory">Category</label>
+                    <select id="productCategory" name="productCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Food">Food</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productQuantity">Initial Quantity</label>
+                    <input type="number" id="productQuantity" name="productQuantity" required min="0" placeholder="0">
+                </div>
+
+                <button type="submit" class="modal-btn">Create Product</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Quantity Modal -->
+    <div id="editQuantityModal" class="modal">
+        <div class="modal-content">
+            <span class="close-qty">&times;</span>
+            <h2>Edit Quantity</h2>
+            
+            <div id="editProductInfo" style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--primary-color);">
+                <p style="margin: 0.5rem 0;"><strong>Product:</strong> <span id="editProductName"></span></p>
+                <p style="margin: 0.5rem 0;"><strong>Current Qty:</strong> <span id="editProductCurrentQty"></span></p>
+            </div>
+
+            <form id="editQuantityForm">
+                <div class="form-group">
+                    <label for="newQuantity">New Quantity</label>
+                    <input type="number" id="newQuantity" name="newQuantity" required min="0" placeholder="Enter new quantity">
+                </div>
+
+                <button type="submit" class="modal-btn">Update Quantity</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

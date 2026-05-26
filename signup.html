@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Stock Ease</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Stock Ease</a>
+            <div class="nav-links">
+                <a href="inventory.html" class="nav-link">📦 Inventory</a>
+            </div>
+            <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="toggle-icon">☀️</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="signup-container">
+        <div class="signup-box">
+            <h1>Create Account</h1>
+            <p class="signup-subtitle">Join Stock Ease Today</p>
+            
+            <form id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fname">First Name</label>
+                        <input type="text" id="fname" name="fname" required placeholder="John">
+                    </div>
+                    <div class="form-group">
+                        <label for="lname">Last Name</label>
+                        <input type="text" id="lname" name="lname" required placeholder="Doe">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        <span class="input-focus"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" name="phone" required placeholder="712345678">
+                        <span class="input-focus"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Create a strong password">
+                    <div class="password-requirements">
+                        <p>Password must contain:</p>
+                        <ul>
+                            <li id="req-length" class="req-item">✗ At least 8 characters</li>
+                            <li id="req-uppercase" class="req-item">✗ Uppercase letter (A-Z)</li>
+                            <li id="req-lowercase" class="req-item">✗ Lowercase letter (a-z)</li>
+                            <li id="req-number" class="req-item">✗ Number (0-9)</li>
+                            <li id="req-special" class="req-item">✗ Special character (!@#$%^&*)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Re-enter your password">
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the Terms and Conditions</label>
+                </div>
+
+                <button type="submit" class="signup-button">Create Account</button>
+            </form>
+
+            <div class="signup-footer">
+                <p>Already have an account? <a href="login.html">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
