@@ -99,36 +99,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // LOGIN FORM LOGIC (for login.html)
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
 
-            // Simple validation
-            if (!username || !password) {
+            if (!email || !password) {
                 alert('Please fill in all fields');
                 return;
             }
 
-            // Basic password validation (at least 6 characters)
             if (password.length < 6) {
                 alert('Password must be at least 6 characters');
                 return;
             }
 
-            // Simulate login
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', username);
-            
-            if (rememberMe) {
-                localStorage.setItem('rememberMe', 'true');
+            try {
+                const result = await login(email, password);
+                alert(`Welcome back, ${result.user.fname}!`);
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert('Login failed: ' + error.message);
             }
-
-            // Show success message and redirect
-            alert(`Welcome back, ${username}!`);
-            window.location.href = 'index.html';
         });
     }
 
@@ -154,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Sign up form submit event
-        signupForm.addEventListener('submit', function(e) {
+        signupForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const fname = document.getElementById('fname').value.trim();
@@ -214,15 +207,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // All validations passed - simulate registration
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', fname + ' ' + lname);
-            localStorage.setItem('email', email);
-            localStorage.setItem('phone', phone);
-
-            // Show success message and redirect
-            alert(`Welcome to Stock Ease, ${fname}! Your account has been created successfully.`);
-            window.location.href = 'index.html';
+            // Send to backend
+            try {
+                const result = await signup(fname, lname, email, phone, password);
+                alert(`Welcome to Stock Ease, ${fname}! Your account has been created successfully.`);
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert('Signup failed: ' + error.message);
+            }
         });
 
         function validatePassword(password) {
@@ -280,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentFilter = 'all';
         let products = JSON.parse(localStorage.getItem('products')) || [];
         let editingProductId = null;
+        let operationType = null; // 'add', 'subtract', or 'set'
 
         // Modal functionality
         addProductBtn.addEventListener('click', function() {
@@ -304,55 +297,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Add product form submit
-        addProductForm.addEventListener('submit', function(e) {
+        addProductForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const name = document.getElementById('productName').value.trim();
-            const id = document.getElementById('productId').value.trim();
+            const product_name = document.getElementById('productName').value.trim();
+            const product_id = document.getElementById('productId').value.trim();
             const category = document.getElementById('productCategory').value;
             const quantity = parseInt(document.getElementById('productQuantity').value) || 0;
 
-            // Validate product ID uniqueness
-            if (products.some(p => p.id === id)) {
-                alert('Product ID already exists!');
-                return;
+            try {
+                await createProduct(product_name, product_id, category, quantity);
+                addProductForm.reset();
+                addProductModal.style.display = 'none';
+                loadProducts();
+            } catch (error) {
+                alert('Error creating product: ' + error.message);
             }
-
-            const newProduct = {
-                id: id,
-                name: name,
-                category: category,
-                quantity: quantity,
-                createdAt: new Date().toISOString()
-            };
-
-            products.push(newProduct);
-            localStorage.setItem('products', JSON.stringify(products));
-
-            addProductForm.reset();
-            addProductModal.style.display = 'none';
-            renderProducts();
         });
 
         // Edit quantity form submit
-        editQuantityForm.addEventListener('submit', function(e) {
+        editQuantityForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const newQuantity = parseInt(document.getElementById('newQuantity').value) || 0;
+            const amount = parseInt(document.getElementById('newQuantity').value) || 0;
             
-            if (newQuantity < 0) {
-                alert('Quantity cannot be negative!');
+            if (amount < 0) {
+                alert('Amount cannot be negative!');
                 return;
             }
 
             const product = products.find(p => p.id === editingProductId);
             if (product) {
-                product.quantity = newQuantity;
-                localStorage.setItem('products', JSON.stringify(products));
-                editQuantityModal.style.display = 'none';
-                renderProducts();
+                let newQuantity;
+                if (operationType === 'add') {
+                    newQuantity = product.quantity + amount;
+                } else if (operationType === 'subtract') {
+                    if (product.quantity - amount < 0) {
+                        alert('Cannot subtract more than current stock!');
+                        return;
+                    }
+                    newQuantity = product.quantity - amount;
+                } else {
+                    newQuantity = amount;
+                }
+
+                try {
+                    await updateProduct(product.id, newQuantity);
+                    editQuantityModal.style.display = 'none';
+                    editQuantityForm.reset();
+                    loadProducts();
+                } catch (error) {
+                    alert('Error updating product: ' + error.message);
+                }
             }
         });
+
+        // Load products from backend
+        async function loadProducts() {
+            try {
+                const result = await getProducts();
+                products = result;
+                renderProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                alert('Error loading products');
+            }
+        }
 
         // Search functionality
         searchInput.addEventListener('input', function() {
@@ -374,13 +384,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        function openEditQuantityModal(productId) {
+        function openEditQuantityModal(productId, type = 'set') {
             const product = products.find(p => p.id === productId);
             if (product) {
                 editingProductId = productId;
+                operationType = type;
+                
                 document.getElementById('editProductName').textContent = product.name;
                 document.getElementById('editProductCurrentQty').textContent = product.quantity;
-                document.getElementById('newQuantity').value = product.quantity;
+                document.getElementById('newQuantity').value = '';
+                
+                const modalTitle = document.getElementById('modalTitle');
+                const quantityLabel = document.getElementById('quantityLabel');
+                const submitBtn = document.getElementById('modalSubmitBtn');
+                
+                if (type === 'add') {
+                    modalTitle.textContent = 'Add Stock';
+                    quantityLabel.textContent = 'Amount to Add';
+                    submitBtn.textContent = 'Add to Stock';
+                } else if (type === 'subtract') {
+                    modalTitle.textContent = 'Remove Stock';
+                    quantityLabel.textContent = 'Amount to Remove';
+                    submitBtn.textContent = 'Remove from Stock';
+                } else {
+                    modalTitle.textContent = 'Set Stock';
+                    quantityLabel.textContent = 'New Quantity';
+                    submitBtn.textContent = 'Set Stock';
+                }
+                
                 editQuantityModal.style.display = 'block';
                 document.getElementById('newQuantity').focus();
             }
@@ -444,46 +475,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Attach event listeners for quantity controls
             document.querySelectorAll('.plus-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.dataset.id;
-                    const product = products.find(p => p.id === productId);
-                    product.quantity += 1;
-                    localStorage.setItem('products', JSON.stringify(products));
-                    renderProducts();
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openEditQuantityModal(this.dataset.id, 'add');
                 });
             });
 
             document.querySelectorAll('.minus-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.dataset.id;
-                    const product = products.find(p => p.id === productId);
-                    if (product.quantity > 0) {
-                        product.quantity -= 1;
-                        localStorage.setItem('products', JSON.stringify(products));
-                        renderProducts();
-                    }
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openEditQuantityModal(this.dataset.id, 'subtract');
                 });
             });
 
             document.querySelectorAll('.qty-clickable').forEach(element => {
                 element.addEventListener('click', function() {
-                    openEditQuantityModal(this.dataset.id);
+                    openEditQuantityModal(this.dataset.id, 'set');
                 });
             });
 
             document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', async function() {
                     const productId = this.dataset.id;
                     if (confirm('Are you sure you want to delete this product?')) {
-                        products = products.filter(p => p.id !== productId);
-                        localStorage.setItem('products', JSON.stringify(products));
-                        renderProducts();
+                        try {
+                            await deleteProduct(productId);
+                            loadProducts();
+                        } catch (error) {
+                            alert('Error deleting product: ' + error.message);
+                        }
                     }
                 });
             });
         }
 
-        // Initial render
-        renderProducts();
+        // Initial load
+        loadProducts();
     }
 });

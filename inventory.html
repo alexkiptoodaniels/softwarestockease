@@ -93,24 +93,25 @@
     <div id="editQuantityModal" class="modal">
         <div class="modal-content">
             <span class="close-qty">&times;</span>
-            <h2>Edit Quantity</h2>
+            <h2 id="modalTitle">Add Stock</h2>
             
             <div id="editProductInfo" style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--primary-color);">
                 <p style="margin: 0.5rem 0;"><strong>Product:</strong> <span id="editProductName"></span></p>
-                <p style="margin: 0.5rem 0;"><strong>Current Qty:</strong> <span id="editProductCurrentQty"></span></p>
+                <p style="margin: 0.5rem 0;"><strong>Current Stock:</strong> <span id="editProductCurrentQty"></span></p>
             </div>
 
             <form id="editQuantityForm">
                 <div class="form-group">
-                    <label for="newQuantity">New Quantity</label>
-                    <input type="number" id="newQuantity" name="newQuantity" required min="0" placeholder="Enter new quantity">
+                    <label for="newQuantity" id="quantityLabel">Amount to Add</label>
+                    <input type="number" id="newQuantity" name="newQuantity" required min="0" placeholder="Enter amount">
                 </div>
 
-                <button type="submit" class="modal-btn">Update Quantity</button>
+                <button type="submit" class="modal-btn" id="modalSubmitBtn">Add to Stock</button>
             </form>
         </div>
     </div>
 
+    <script src="api.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
