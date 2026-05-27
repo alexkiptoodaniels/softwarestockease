@@ -1,5 +1,7 @@
 // API Configuration
-const API_URL = 'http://localhost:5000/api'; // Change to your backend URL when deployed
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api'
+    : '/api';
 
 // Store API token
 function setAuthToken(token) {
@@ -49,7 +51,7 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 
 // SIGNUP
 async function signup(fname, lname, email, phone, password) {
-    const result = await apiCall('/auth/signup', 'POST', {
+    const result = await apiCall('/auth?action=signup', 'POST', {
         fname, lname, email, phone, password
     });
     
@@ -63,7 +65,7 @@ async function signup(fname, lname, email, phone, password) {
 
 // LOGIN
 async function login(email, password) {
-    const result = await apiCall('/auth/login', 'POST', {
+    const result = await apiCall('/auth?action=login', 'POST', {
         email, password
     });
     
@@ -95,11 +97,11 @@ async function getProducts() {
 }
 
 async function updateProduct(id, quantity) {
-    return await apiCall(`/products/${id}`, 'PUT', { quantity });
+    return await apiCall(`/products?id=${id}`, 'PUT', { quantity });
 }
 
 async function deleteProduct(id) {
-    return await apiCall(`/products/${id}`, 'DELETE');
+    return await apiCall(`/products?id=${id}`, 'DELETE');
 }
 
 // Export for use in script.js

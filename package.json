@@ -1,0 +1,1 @@
+{"name":"softwarestockease","version":"1.0.0","description":"Stock management application","type":"module","scripts":{"dev":"vercel dev","build":"echo 'Static site, no build needed'","start":"echo 'Static site, use vercel dev to run locally'"},"dependencies":{"pg":"^8.11.3","bcryptjs":"^2.4.3","jsonwebtoken":"^9.1.2","dotenv":"^16.3.1"},"devDependencies":{"vercel":"^latest"}}
