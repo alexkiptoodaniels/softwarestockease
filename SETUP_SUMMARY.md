@@ -172,7 +172,7 @@ When prompted:
 - Indexes for performance
 - Cascading deletes
 
-## 🔐 Security Features
+## 🔒 Security Features
 
 ✅ JWT tokens (7-day expiration)
 ✅ Password hashing (bcrypt with salt rounds)
@@ -190,7 +190,7 @@ When prompted:
 - **Database Tables**: 2 with indexes
 - **Security Measures**: 6 implemented
 
-## 🎏 What Works Locally
+## 🎯 What Works Locally
 
 ```bash
 npm run dev
@@ -198,7 +198,7 @@ npm run dev
 # API available at http://localhost:3000/api
 ```
 
-## 🛌 What Works on Vercel
+## 🌐 What Works on Vercel
 
 ```
 https://your-project.vercel.app/
